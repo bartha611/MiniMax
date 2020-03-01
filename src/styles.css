@@ -6,7 +6,7 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  margin-top: 100px;
+  margin-top: 50px;
   width: 400px;
   height: 400px;
   border: 10px solid #000;
@@ -36,6 +36,56 @@ body {
 }
 .cell:not(:nth-child(3n)) {
   border-right: 3px solid black;
+}
+#info {
+  margin-top: 30px;
+}
+#info-title {
+  text-align: center;
+  font-size: 30px;
+  margin: 20px 0;
+}
+#symbols {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+.symbol {
+  display: block;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding: 10px;
+  background: grey;
+}
+.symbol:nth-child(1) {
+  border: 2px solid black;
+}
+.symbol:nth-child(2) {
+  border-style: solid;
+  border-width: 2px 2px 2px 0;
+}
+.symbol:active {
+  box-shadow: 1px 1px 5px 1px inset black;
+}
+#info {
+  width: 400px;
+  margin: 0 auto;
+}
+#game-info {
+  text-align: center;
+  font-size: 30px;
+  font-family: "Times New Roman", Times, serif;
+}
+#score-info {
+  display: flex;
+  justify-content: space-around;
+}
+.score-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
 }
 
 @keyframes animate {

@@ -1,40 +1,95 @@
+import { computerTurn } from "./computer";
 import { checkwin } from "./checkwin";
+import { getOpenCells } from "./minimax";
+import { reset } from "./game";
+
+const turn = Math.random() > 0.5;
+
+export const computer = {
+  symbol: null
+};
+export const player = {
+  symbol: null
+};
+export const game = {
+  board: ["", "", "", "", "", "", "", "", ""],
+  pause: false,
+  turn
+};
+
+export let board = ["", "", "", "", "", "", "", "", ""];
 
 let items = document.querySelectorAll(".cell");
-let board = ["", "", "", "", "", "", "", "", ""];
-let player = ["x", "o"][Math.floor(Math.random() * 2)];
-let computer = ["x", "o"].filter(x => x !== player)[0];
-let turn = Math.random() > 0.5;
 
-const rowPostions = {
-  top: 0,
-  middle: 1,
-  bottom: 2
+const pickSymbol = e => {
+  const { value } = e.target.dataset;
+  player.symbol = value;
+  computer.symbol = ["x", "o"].filter(x => x !== value)[0];
+  document.getElementById("symbols").style.display = "none";
+  document.getElementById("info-title").style.display = "none";
+  document.getElementById("game-info").innerHTML =
+    game.turn === true ? "Players's turn" : "Computer's Turn";
+  return false;
 };
-const cellPositons = {
-  left: 0,
-  middle: 1,
-  right: 2
-};
+
+let symbols = document.querySelectorAll(".symbol");
+for (let item = 0; item < symbols.length; item++) {
+  symbols[item].addEventListener("click", pickSymbol);
+}
 
 const takeCell = e => {
   const { id } = e.target;
-  console.log(e.target.dataset.value);
-  if (!id || !turn) {
+  if (!id || !player.symbol || !game.turn) {
     return false;
   }
-  const [x, y] = id.split("-");
-  const row = rowPostions[x];
-  const column = cellPositons[y];
-  if (board[row][column]) {
-    console.log("already taken");
+  const position = Number(id);
+  if (board[position] !== "") {
     return false;
   } else {
-    board[row][column] = "x";
-    e.target.innerHTML = `<div class="value">${player}</div>`;
+    board[position] = player.symbol;
+    game.turn = false;
+    const gameInfo = document.getElementById("game-info");
+    gameInfo.innerHTML = `<h5>Computer's Turn</h5>`;
+    e.target.innerHTML = `<div class="value">${player.symbol}</div>`;
+    if (checkwin(player, board)) {
+      const playerWins = Number(document.getElementById("player").innerHTML);
+      document.getElementById("player").innerHTML = String(playerWins + 1);
+      game.pause = true;
+    } else if (getOpenCells(board).length === 0) {
+      const ties = Number(document.getElementById("tie").innerHTML);
+      document.getElementById("tie").innerHTML = String(ties + 1);
+      game.pause = true;
+    }
   }
 };
-
 for (let i = 0; i < items.length; i++) {
   items[i].addEventListener("click", takeCell);
 }
+
+const ticTacToe = () => {
+  if (!game.pause && !game.turn && computer.symbol) {
+    setTimeout(() => {
+      computerTurn(computer, board);
+    }, 2000);
+    if (checkwin(computer, board)) {
+      const computerWins = Number(
+        document.getElementById("computer").innerHTML
+      );
+      document.getElementById("computer").innerHTML = String(computerWins + 1);
+      game.pause = true;
+    } else if (getOpenCells(board).length === 0) {
+      const ties = Number(document.getElementById("tie").innerHTML);
+      document.getElementById("tie").innerHTML = String(ties + 1);
+      game.pause = true;
+    } else {
+      game.turn = true;
+    }
+  } else if (game.pause) {
+    setTimeout(() => {
+      reset(board, turn);
+    }, 1000);
+    game.pause = false;
+  }
+};
+
+setInterval(ticTacToe, 3000);
