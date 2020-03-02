@@ -1,9 +1,6 @@
 import { computerTurn } from "./computer";
 import { checkwin } from "./checkwin";
 import { getOpenCells } from "./minimax";
-import { reset } from "./game";
-
-const turn = Math.random() > 0.5;
 
 export const computer = {
   symbol: null
@@ -14,10 +11,8 @@ export const player = {
 export const game = {
   board: ["", "", "", "", "", "", "", "", ""],
   pause: false,
-  turn
+  turn: Math.random() > 0.5
 };
-
-export let board = ["", "", "", "", "", "", "", "", ""];
 
 let items = document.querySelectorAll(".cell");
 
@@ -43,19 +38,19 @@ const takeCell = e => {
     return false;
   }
   const position = Number(id);
-  if (board[position] !== "") {
+  if (game.board[position] !== "") {
     return false;
   } else {
-    board[position] = player.symbol;
+    game.board[position] = player.symbol;
     game.turn = false;
     const gameInfo = document.getElementById("game-info");
     gameInfo.innerHTML = `<h5>Computer's Turn</h5>`;
     e.target.innerHTML = `<div class="value">${player.symbol}</div>`;
-    if (checkwin(player, board)) {
+    if (checkwin(player.symbol, game.board)) {
       const playerWins = Number(document.getElementById("player").innerHTML);
       document.getElementById("player").innerHTML = String(playerWins + 1);
       game.pause = true;
-    } else if (getOpenCells(board).length === 0) {
+    } else if (getOpenCells(game.board).length === 0) {
       const ties = Number(document.getElementById("tie").innerHTML);
       document.getElementById("tie").innerHTML = String(ties + 1);
       game.pause = true;
@@ -66,29 +61,44 @@ for (let i = 0; i < items.length; i++) {
   items[i].addEventListener("click", takeCell);
 }
 
+const delay = ms => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+};
+
 const ticTacToe = () => {
   if (!game.pause && !game.turn && computer.symbol) {
-    setTimeout(() => {
-      computerTurn(computer, board);
-    }, 2000);
-    if (checkwin(computer, board)) {
-      const computerWins = Number(
-        document.getElementById("computer").innerHTML
-      );
-      document.getElementById("computer").innerHTML = String(computerWins + 1);
-      game.pause = true;
-    } else if (getOpenCells(board).length === 0) {
-      const ties = Number(document.getElementById("tie").innerHTML);
-      document.getElementById("tie").innerHTML = String(ties + 1);
-      game.pause = true;
-    } else {
-      game.turn = true;
-    }
+    delay(1000).then(() => {
+      computerTurn(computer, game.board);
+      if (checkwin(computer.symbol, game.board)) {
+        const computerWins = Number(
+          document.getElementById("computer").innerHTML
+        );
+        document.getElementById("computer").innerHTML = String(
+          computerWins + 1
+        );
+        game.pause = true;
+      } else if (getOpenCells(game.board).length === 0) {
+        const ties = Number(document.getElementById("tie").innerHTML);
+        document.getElementById("tie").innerHTML = String(ties + 1);
+        game.pause = true;
+      } else {
+        game.turn = true;
+      }
+    });
   } else if (game.pause) {
-    setTimeout(() => {
-      reset(board, turn);
-    }, 1000);
-    game.pause = false;
+    delay(1000).then(() => {
+      game.board = ["", "", "", "", "", "", "", "", ""];
+      game.turn = Math.random() > 0.5;
+      document.getElementById("game-info").innerHTML =
+        game.turn === true ? "Player's Turn" : "Computer's Turn";
+      const cells = document.querySelectorAll(".cell");
+      cells.forEach(cell => {
+        cell.innerHTML = "";
+      });
+      game.pause = false;
+    });
   }
 };
 

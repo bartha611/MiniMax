@@ -29,9 +29,10 @@ const checkColumns = (player, board) => {
 };
 
 const checkDiagonals = (player, board) => {
+  let newBoard = board.slice(0);
   const diagonals = [
-    [board[0], board[4], board[8]],
-    [board[2], board[4], board[6]]
+    [newBoard[0], newBoard[4], newBoard[8]],
+    [newBoard[2], newBoard[4], newBoard[6]]
   ];
   for (const diagonal of diagonals) {
     if (diagonal.filter(x => x !== player).length === 0) {
