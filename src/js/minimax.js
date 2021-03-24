@@ -1,6 +1,6 @@
 import { checkwin } from "./checkwin";
 
-export const getOpenCells = board => {
+export const getOpenCells = (board) => {
   let answer = [];
   for (let i = 0; i < 9; i++) {
     if (board[i] === "") {
@@ -40,7 +40,7 @@ export const move = (currentBoard, computer) => {
 };
 
 const backtrack = (player, board, depth) => {
-  const currentPlayer = ["x", "o"].filter(x => x !== player)[0];
+  const currentPlayer = ["x", "o"].filter((x) => x !== player)[0];
   let scores = [];
   const cells = getOpenCells(board);
   const newDepth = depth + 1;
@@ -54,9 +54,5 @@ const backtrack = (player, board, depth) => {
     newBoard[cell] = currentPlayer;
     scores.push(backtrack(currentPlayer, newBoard, newDepth));
   }
-  if (currentPlayer === "x") {
-    return Math.max(...scores);
-  } else {
-    return Math.min(...scores);
-  }
+  return currentPlayer === "x" ? Math.max(...scores) : Math.min(...scores);
 };
